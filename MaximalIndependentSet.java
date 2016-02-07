@@ -1,6 +1,9 @@
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.Random;
+import java.io.FileInputStream;
+import java.io.IOException;
+
 
 class MaximalIndependentSet
 {
@@ -11,23 +14,63 @@ class MaximalIndependentSet
 	int max_color[];
 	ArrayList<ArrayList<Integer>> MIS;
 
-	MaximalIndependentSet(int vertices, int edges)
+	MaximalIndependentSet(int vertices)
 	{
 		no_of_vertices = vertices;
 		random = new Random();
-		int max_edges = vertices*(vertices-1)/2;
 
-		GRAPH = new boolean[vertices][vertices];
-		for(int i=0; i<vertices; i++)
-			for(int j=i+1; j<vertices; j++)
+	}
+	MaximalIndependentSet()
+	{
+	}
+
+	void makeRandom(int edges)
+	{
+		int max_edges = no_of_vertices*(no_of_vertices-1)/2;
+
+		GRAPH = new boolean[no_of_vertices][no_of_vertices];
+		for(int i=0; i<no_of_vertices; i++)
+			for(int j=i+1; j<no_of_vertices; j++)
 				GRAPH[i][j] = GRAPH[j][i] = (random.nextInt(max_edges)<edges);
 
-		max_color = new int[vertices];
+		max_color = new int[no_of_vertices];
 		for (int i=0;i<no_of_vertices ;i++ ) 
 			max_color[i] = random.nextInt(MAX_COLOR)+1;
 
 	}
-
+	private boolean[] StringAtoBoolA(String[] line)
+	{
+		boolean arr[] = new boolean[line.length];
+		int c=0;
+		for (String s :line ) {
+				arr[c++] = !s.equals("0");
+		}
+		return  arr;
+	}
+	boolean fromFile(String filename)
+	{
+		try
+		{
+			Scanner in = new Scanner(new FileInputStream(filename));
+			String line = in.nextLine();
+			String booleans[] = line.split(" ");
+			no_of_vertices = booleans.length;
+			GRAPH = new boolean[no_of_vertices][no_of_vertices];
+			GRAPH[0] = StringAtoBoolA(booleans);
+			int c=1;
+			while(in.hasNext())
+			{
+				line = in.nextLine();
+				GRAPH[c++] = StringAtoBoolA(line.split(" "));
+			}
+			return true;
+			
+		}catch(IOException e)
+		{
+			System.err.println("Error : "+e);
+			return false;
+		}
+	}
 	void print()
 	{
 		System.out.println("\nGraph");
@@ -36,12 +79,19 @@ class MaximalIndependentSet
 				System.out.print(GRAPH[i][j]?"1 ":"0 ");
 			System.out.println();
 		}
-
-		System.out.println("\n\nMax Colors");
-		for (int i=0;i<no_of_vertices ;i++ )
+		if(max_color!=null)
+		{
+			System.out.println("\n\nMax Colors");
+			for (int i=0;i<no_of_vertices ;i++ )
 			System.out.print(max_color[i]+" ");
-		System.out.println("\n");
+			System.out.println("\n");
+			
+		}
 		
+		
+	}
+	void printMIS()
+	{
 		if(MIS!=null)
 		{
 			System.out.println("Maximal Indepedent Sets");
@@ -54,7 +104,7 @@ class MaximalIndependentSet
 				System.out.println();
 		
 			}
-	
+			System.out.println("Number of Set : "+MIS.size());
 		}
 	}
 
@@ -85,14 +135,25 @@ class MaximalIndependentSet
 	}
 	public static void main(String[] args) {
 		Scanner in = new Scanner(System.in);
-		System.out.print("Enter Number of Vertices : ");
+	/*	System.out.print("Enter Number of Vertices : ");
 		int no_of_vertices = in.nextInt();
 		System.out.print("Enter Rought No of Edges : ");
 		int no_of_r_edges = in.nextInt();
-		
-		MaximalIndependentSet mis = new MaximalIndependentSet(no_of_vertices, no_of_r_edges);
-		mis.make();
-		mis.print();
+	*/	
+		MaximalIndependentSet mis = new MaximalIndependentSet();
+		//mis.make();
+
+		if(args.length==0)
+		{
+			System.err.println("Please Give Filename!!");
+			return;
+		}
+		String fname = args[0];
+		if(mis.fromFile(fname))
+			{
+				mis.make();
+				mis.printMIS();
+			}
 
 	}
 }
