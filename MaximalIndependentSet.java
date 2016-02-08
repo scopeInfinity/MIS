@@ -38,13 +38,11 @@ class MaximalIndependentSet
 			max_color[i] = random.nextInt(MAX_COLOR)+1;
 
 	}
-	private boolean[] StringAtoBoolA(String[] line)
+	private boolean[] StringAtoBoolA(String line)
 	{
-		boolean arr[] = new boolean[line.length];
-		int c=0;
-		for (String s :line ) {
-				arr[c++] = !s.equals("0");
-		}
+		boolean arr[] = new boolean[line.length()];
+		for(int i=0;i<arr.length;i++)
+			arr[i]=(line.charAt(i)=='1');
 		return  arr;
 	}
 	boolean fromFile(String filename)
@@ -53,15 +51,15 @@ class MaximalIndependentSet
 		{
 			Scanner in = new Scanner(new FileInputStream(filename));
 			String line = in.nextLine();
-			String booleans[] = line.split(" ");
-			no_of_vertices = booleans.length;
+			line = line.replaceAll(" ","");
+			no_of_vertices = line.length();
 			GRAPH = new boolean[no_of_vertices][no_of_vertices];
-			GRAPH[0] = StringAtoBoolA(booleans);
+			GRAPH[0] = StringAtoBoolA(line);
 			int c=1;
 			while(in.hasNext())
 			{
-				line = in.nextLine();
-				GRAPH[c++] = StringAtoBoolA(line.split(" "));
+				line = in.nextLine().replaceAll(" ","");
+				GRAPH[c++] = StringAtoBoolA(line);
 			}
 			return true;
 			
@@ -142,16 +140,12 @@ class MaximalIndependentSet
 	*/	
 		MaximalIndependentSet mis = new MaximalIndependentSet();
 		//mis.make();
-
-		if(args.length==0)
-		{
-			System.err.println("Please Give Filename!!");
-			return;
-		}
-		String fname = args[0];
+		System.out.print("Enter Filename : ");
+		String fname = in.nextLine();
 		if(mis.fromFile(fname))
 			{
 				mis.make();
+				mis.print();
 				mis.printMIS();
 			}
 
